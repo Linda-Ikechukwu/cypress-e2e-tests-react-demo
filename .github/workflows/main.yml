@@ -1,22 +1,22 @@
 name: E2E tests
-    on:
-      push:
-        branches:
-          - master
-          - develop
-      pull_request:
-        branches:
-          - master
-          - develop
-    jobs:
-      cypress-run:
-        runs-on: ubuntu-latest
-        steps:
-          - name: Checkout
-            uses: actions/checkout@v2
-          - name: Setup npm package
-            run: npm install
-          - name: Run E2E test
-            uses: cypress-io/github-action@v2
-            with:
-              spec: cypress/integration/sampletest.spec.js
+  on:
+    push:
+      branches:
+        - master
+        - develop
+    pull_request:
+      branches:
+        - master
+        - develop
+  jobs:
+    cypress-run:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+        - name: Setup npm package
+          run: npm install
+        - name: Run E2E test
+          uses: cypress-io/github-action@v2
+          with:
+            spec: cypress/integration/sampletest.spec.js
