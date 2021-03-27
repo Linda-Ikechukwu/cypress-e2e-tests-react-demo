@@ -1,6 +1,6 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import getIcon from '../WeatherIcons/icons'
+import getIcon from '../weatherIcons/icons'
 import "../Styles/weathercard.scss"
 
 const WeatherCards = ({weatherData}) =>{

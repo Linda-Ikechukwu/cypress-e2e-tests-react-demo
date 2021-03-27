@@ -22,13 +22,16 @@ function App() {
 
   const onSuccessLocation = async (position) => {
     const location = `${position.coords.latitude}%2C${position.coords.longitude}`;
+    console.log(location);
     localStorage.setItem('location', location);
     setIsLocationExist(true);
     await getWeatherData(location);
   }
 
   const onErrorLocation = (err) => {
-    setLocationError(`Failed to locate. Error: ${err.message}`);
+    setLoading(false)
+    setLocationError(`Failed to locate. Error: ${err.code}`);
+
   }
 
   const getLocation = () => {
@@ -43,12 +46,16 @@ function App() {
 
   const getWeatherData = async (location) => {
     setLoading(true);
-    const url = `https://data.climacell.co/v4/timelines?location=${location}&fields=temperature&fields=weatherCode&timesteps=1d&units=metric&apikey=${process.env.REACT_APP_CLIMACELL_API_KEY}`;
+    const url = `https://data.climacell.co/v4/timelines?location=${location}&fields=temperature&fields=weatherCode&timesteps=1d&units=metric&apikey=fmqXDGLaGG7rhK7il3jfQ0XZotU3vDVb`;
     try {
       const response = await axios.get(url);
       if (response.data) {
         setWeatherData(response.data.data.timelines[0].intervals.slice(0, 7));
         setLoading(false);
+      }
+      else {
+        setLoading(false);
+        setErrorMessage("Something went wrong");
       }
     } catch (error) {
       setLoading(false);
@@ -78,39 +85,44 @@ function App() {
           ) :
           !isLocationExist ?
             (
-              <div className="weather-app-home">
+              <>
+                <div className="weather-app-home">
+                  <Button colorScheme="teal" variant="outline" onClick={() => getLocation()}>
+                    Get Current Location Weather
+                </Button>
                 {
                   locationError !== "" && (
-                    <Alert status="error">
-                      <AlertIcon />
-                      <AlertTitle mr={2}>{errorMessage.split(".")[0]}.</AlertTitle>
-                      <AlertDescription>{errorMessage.split(".")[1]}.</AlertDescription>
-                      <CloseButton position="absolute" right="8px" top="8px" />
-                    </Alert>
+                    <div className="location-error">
+                      <Alert status="error">
+                        <AlertIcon />
+                        <AlertTitle mr={2}>{"An Error Ocurred"}.</AlertTitle>
+                        <AlertDescription>{errorMessage.split(".")[1]}.</AlertDescription>
+                        <CloseButton position="absolute" right="8px" top="8px" />
+                      </Alert>
+                    </div>
                   )
                 }
-                <Button colorScheme="teal" variant="outline" onClick={() => getLocation()}>
-                  Get Current Location Weather
-                </Button>
-              </div>
-            ) :
-            weatherData.length ?
-            (
-              <>
-                <div className="weather-today">
-                  <WeatherToday currentWeather={weatherData[0]} />
                 </div>
-                <div className="weather-cards">
-                  <div><WeatherCards weatherData={weatherData.slice(1, 7)} /></div>
-                </div>
+                
               </>
             ) :
-            (
-              <div className="weather-app-error">
-                <p>{errorMessage}. Please try reloading the page</p>
-              </div>
-            )
-        }
+            weatherData.length ?
+              (
+                <>
+                  <div className="weather-today">
+                    <WeatherToday currentWeather={weatherData[0]} />
+                  </div>
+                  <div className="weather-cards">
+                    <div><WeatherCards weatherData={weatherData.slice(1, 7)} /></div>
+                  </div>
+                </>
+              ) :
+              (
+                <div className="weather-app-error">
+                  <p>{errorMessage}. Please try reloading the page</p>
+                </div>
+              )
+      }
     </div>
   )
 }
