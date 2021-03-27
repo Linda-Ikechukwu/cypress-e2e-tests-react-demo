@@ -16,8 +16,6 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup npm package
         run: npm install
-      - name: Run server
-        run: npm run start
       - name: Run E2E test
         uses: cypress-io/github-action@v2
         with:
