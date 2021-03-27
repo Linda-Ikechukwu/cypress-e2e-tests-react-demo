@@ -38,14 +38,14 @@ describe("Sample test for weather widget app", () => {
         })
     })
 
-    it('show error if request body is empty', () => {
-        cy.intercept('GET', '**/data.climacell.co/v4/timelines?location**', {}).as('getWeatherData');
+    /* it('show error if request body is empty', () => {
+        cy.intercept('GET', 'data.climacell.co/v4/timelines?location**', {}).as('getWeatherData');
         cy.get('button').contains('Get Current Location Weather').click()
         cy.wait('@getWeatherData').then(() =>{
             cy.get('.weather-app-error').should('be.visible').and('contain', 'Please try reloading the page');
         })
         cy.intercept
-    }) 
+    })*/
 
     
 })
