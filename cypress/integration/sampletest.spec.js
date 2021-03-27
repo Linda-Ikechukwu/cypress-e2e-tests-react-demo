@@ -27,27 +27,24 @@ describe("Sample test for weather widget app", () => {
         cy.get('.location-error').should('be.visible')
     })
 
-    it('should store location in localstorage if navigator.geolocation.getCurrentPosition is successful', () =>{
+    it('should store location in localstorage if navigator.geolocation.getCurrentPosition is successful and show weather data', () =>{
         cy.stubGeolocation(75,86);
         cy.get('button').contains('Get Current Location Weather').click().should(() => {
             expect(localStorage.getItem('location')).to.eq('75%2C86')
         })
+        cy.get('.weather-today').should('be.visible');
+        cy.get('.weather-cards').within(($cards) =>{
+            cy.get('.weather-card').should('have.length', 6);
+        })
     })
 
-    it('should make api call and show weather data if successful else show error', () => {
-        cy.get('button').contains('Get Current Location Weather').click().then( () => {
-            cy.request(`https://data.climacell.co/v4/timelines?location=75%2C86&fields=temperature&fields=weatherCode&timesteps=1d&units=metric&apikey=fmqXDGLaGG7rhK7il3jfQ0XZotU3vDVb`).as('weatherData');
-            cy.get('@weatherData').then( response  => {
-               if(response.status === 200){
-                   cy.get('.weather-today').should('be.visible');
-                   cy.get('.weather-cards').within(($cards) =>{
-                       cy.get('.weather-card').should('have.length', 6);
-                   })
-               }else{
-                    cy.get('.weather-app-error').should('be.visible').and('contain', 'Please try reloading the page');
-               }
-            })
+    it('show error if request body is empty', () => {
+        cy.intercept('GET', '**/data.climacell.co/v4/timelines?location**', {}).as('getWeatherData');
+        cy.get('button').contains('Get Current Location Weather').click()
+        cy.wait('@getWeatherData').then(() =>{
+            cy.get('.weather-app-error').should('be.visible').and('contain', 'Please try reloading the page');
         })
+        cy.intercept
     }) 
 
     
